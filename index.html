@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Our Memories</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:'Poppins', sans-serif;
+background:#1e1e1e;
+color:white;
+margin:0;
+padding:30px;
+text-align:center;
+overflow-x:hidden;
+}
+
+/* TITLE */
+
+h1{
+font-size:48px;
+letter-spacing:2px;
+margin-bottom:10px;
+}
+
+/* NAVIGATION */
+
+nav{
+margin-bottom:30px;
+}
+
+nav button{
+padding:10px 20px;
+margin:5px;
+border:none;
+background:#ff4da6;
+color:white;
+border-radius:20px;
+cursor:pointer;
+font-size:16px;
+font-family:'Poppins';
+}
+
+nav button:hover{
+background:#ff1a8c;
+}
+
+/* GALLERY */
+
+.gallery{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+gap:20px;
+max-width:1000px;
+margin:auto;
+}
+
+.photo{
+position:relative;
+overflow:hidden;
+border-radius:15px;
+box-shadow:0 4px 15px rgba(0,0,0,0.6);
+}
+
+.photo img{
+width:100%;
+height:250px;
+object-fit:cover;
+transition:transform 0.4s;
+}
+
+.photo:hover img{
+transform:scale(1.1);
+}
+
+.caption{
+position:absolute;
+bottom:0;
+background:rgba(0,0,0,0.7);
+color:white;
+width:100%;
+padding:10px;
+opacity:0;
+transition:opacity 0.3s;
+}
+
+.photo:hover .caption{
+opacity:1;
+}
+
+/* MESSAGE AREA */
+
+textarea{
+width:300px;
+padding:10px;
+border-radius:10px;
+border:none;
+font-family:'Poppins';
+}
+
+#messageList p{
+background:#2c2c2c;
+padding:10px;
+border-radius:10px;
+margin:10px auto;
+width:300px;
+}
+
+/* FLOATING HEARTS */
+
+.heart{
+position:fixed;
+color:#ff4da6;
+font-size:22px;
+animation:float 6s linear infinite;
+}
+
+@keyframes float{
+0%{transform:translateY(100vh);}
+100%{transform:translateY(-10vh);}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav>
+<button onclick="showPage('gallery')">Gallery</button>
+<button onclick="showPage('messages')">Messages</button>
+</nav>
+
+<!-- GALLERY PAGE -->
+
+<div id="gallery">
+
+<h1>❤️ Our Memories ❤️</h1>
+
+<h2 id="counter"></h2>
+
+<div class="gallery">
+
+<div class="photo">
+<a href="pic1.jpg" target="_blank">
+<img src="pic1.jpg">
+</a>
+<div class="caption">The One Where He Gave Me A Ring</div>
+</div>
+
+<div class="photo">
+<a href="pic2.jpg" target="_blank">
+<img src="pic2.jpg">
+</a>
+<div class="caption">The One Where We Painted</div>
+</div>
+
+<div class="photo">
+<a href="pic3.jpg" target="_blank">
+<img src="pic3.jpg">
+</a>
+<div class="caption">The One In The Log House</div>
+</div>
+
+<div class="photo">
+<a href="pic4.jpg" target="_blank">
+<img src="pic4.jpg">
+</a>
+<div class="caption">The One With Super Caffeine Sickness</div>
+</div>
+
+</div>
+
+</div>
+
+<!-- MESSAGES PAGE -->
+
+<div id="messages" style="display:none">
+
+<h1>Messages For Each Other ❤️</h1>
+
+<textarea id="messageBox" placeholder="Write a message..." rows="5"></textarea>
+
+<br><br>
+
+<button onclick="saveMessage()">Send Message</button>
+
+<h3>Our Messages</h3>
+
+<div id="messageList"></div>
+
+<h2>Upload a Photo</h2>
+
+<input type="file" id="photoUpload">
+
+<div id="preview"></div>
+
+</div>
+
+<!-- FLOATING HEARTS -->
+
+<div class="heart" style="left:10%">❤️</div>
+<div class="heart" style="left:30%">❤️</div>
+<div class="heart" style="left:50%">❤️</div>
+<div class="heart" style="left:70%">❤️</div>
+<div class="heart" style="left:90%">❤️</div>
+
+<script>
+
+/* PAGE SWITCH */
+
+function showPage(page){
+
+document.getElementById("gallery").style.display="none";
+document.getElementById("messages").style.display="none";
+
+document.getElementById(page).style.display="block";
+
+}
+
+/* MESSAGE SYSTEM */
+
+function saveMessage(){
+
+const box = document.getElementById("messageBox");
+const list = document.getElementById("messageList");
+
+if(box.value.trim() === "") return;
+
+const message = document.createElement("p");
+message.textContent = box.value;
+
+list.appendChild(message);
+
+box.value="";
+
+}
+
+/* PHOTO UPLOAD PREVIEW */
+
+document.getElementById("photoUpload").addEventListener("change", function(event){
+
+const preview = document.getElementById("preview");
+
+const img = document.createElement("img");
+
+img.src = URL.createObjectURL(event.target.files[0]);
+
+img.style.width="200px";
+img.style.margin="10px";
+img.style.borderRadius="10px";
+
+preview.appendChild(img);
+
+});
+
+/* RELATIONSHIP COUNTER */
+
+const startDate = new Date("2024-06-01");
+const today = new Date();
+const diff = Math.floor((today - startDate) / (1000*60*60*24));
+
+document.getElementById("counter").innerText =
+"We have been together for " + diff + " days ❤️";
+
+</script>
+
+</body>
+
+</html>
