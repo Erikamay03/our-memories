@@ -2,6 +2,7 @@
 <html>
 
 <head>
+
 <title>Our Memories</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
@@ -9,28 +10,58 @@
 <style>
 
 body{
-font-family:'Poppins',Century gothic;
-background:#1e1e1e;
+font-family:'Poppins',sans-serif;
+margin:0;
 color:white;
 text-align:center;
-padding:30px;
+min-height:100vh;
+overflow-x:hidden;
+}
+
+/* GRADIENT BACKGROUND */
+
+body::before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:-1;
+
+background:
+radial-gradient(circle at 20% 30%,#ff6a6a,transparent 40%),
+radial-gradient(circle at 80% 70%,#5c4bff,transparent 40%),
+radial-gradient(circle at 50% 50%,#ff3d7f,transparent 40%),
+#0f0f14;
+
+filter:blur(80px);
+}
+
+/* NAV */
+
+nav{
+margin-top:20px;
 }
 
 nav button{
-padding:10px 20px;
+padding:12px 22px;
 margin:5px;
 border:none;
 background:#ff4da6;
 color:white;
-border-radius:20px;
+border-radius:25px;
 cursor:pointer;
+font-weight:500;
 }
+
+/* GALLERY */
 
 .gallery{
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
 gap:20px;
-max-width:1000px;
+max-width:900px;
 margin:auto;
 }
 
@@ -38,53 +69,81 @@ margin:auto;
 width:100%;
 height:250px;
 object-fit:cover;
-border-radius:10px;
+border-radius:12px;
 }
+
+/* CHAT */
+
+#messageList{
+max-width:600px;
+margin:auto;
+}
+
+.message{
+padding:12px;
+margin:10px;
+border-radius:15px;
+max-width:70%;
+}
+
+.left{
+background:#2a2a33;
+text-align:left;
+}
+
+.right{
+background:#ff4da6;
+margin-left:auto;
+}
+
+.name{
+font-weight:bold;
+}
+
+.time{
+font-size:11px;
+opacity:0.7;
+}
+
+/* INPUT */
 
 textarea,input{
 width:300px;
 padding:10px;
 border-radius:10px;
+border:none;
 margin:5px;
 }
 
-.message{
-background:#2c2c2c;
-padding:10px;
-margin:10px auto;
+button{
+padding:10px 15px;
+border:none;
 border-radius:10px;
-width:320px;
-text-align:left;
-}
-
-.name{
-font-weight:bold;
-color:#ff4da6;
-}
-
-.time{
-font-size:12px;
-color:#bbb;
+cursor:pointer;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <script>
 var password="november19";
-var user=prompt("Enter password to view our memories ❤️");
+var user=prompt("Enter password ❤️");
+
 if(user!==password){
 document.body.innerHTML="<h1>Access Denied</h1>";
 }
 </script>
 
 <nav>
+
 <button onclick="showPage('gallery')">Gallery</button>
 <button onclick="showPage('messages')">Messages</button>
 <button onclick="showPage('letters')">Love Letters</button>
 <button onclick="showPage('timeline')">Timeline</button>
+
 </nav>
 
 <!-- GALLERY -->
@@ -98,45 +157,43 @@ document.body.innerHTML="<h1>Access Denied</h1>";
 
 <div class="photo">
 <img src="pic1.jpg">
-<p>The One Where He Gave Me A Ring</p>
+<p>The Ring 💍</p>
 </div>
 
 <div class="photo">
 <img src="pic2.jpg">
-<p>The One Where We Painted</p>
+<p>Painting Together 🎨</p>
 </div>
 
 <div class="photo">
 <img src="pic3.jpg">
-<p>The One In The Log House</p>
+<p>Log House Trip 🏡</p>
 </div>
 
 <div class="photo">
 <img src="pic4.jpg">
-<p>The One With Super Caffeine Sickness</p>
+<p>Coffee Day ☕</p>
 </div>
 
 </div>
 
 </div>
 
-<!-- MESSAGES -->
+<!-- CHAT -->
 
 <div id="messages" style="display:none">
 
-<h1>Messages For Each Other ❤️</h1>
+<h1>Chat ❤️</h1>
 
 <input id="messageName" placeholder="Your name">
 
 <br>
 
-<textarea id="messageBox" placeholder="Write a message..."></textarea>
+<textarea id="messageBox"></textarea>
 
 <br>
 
-<button onclick="saveMessage()">Send Message</button>
-
-<h3>Our Messages</h3>
+<button onclick="sendMessage()">Send</button>
 
 <div id="messageList"></div>
 
@@ -152,13 +209,11 @@ document.body.innerHTML="<h1>Access Denied</h1>";
 
 <br>
 
-<textarea id="letterBox" placeholder="Write a love letter..."></textarea>
+<textarea id="letterBox"></textarea>
 
 <br>
 
-<button onclick="saveLetter()">Save Letter</button>
-
-<h3>Our Love Letters</h3>
+<button onclick="sendLetter()">Save Letter</button>
 
 <div id="letterList"></div>
 
@@ -170,17 +225,24 @@ document.body.innerHTML="<h1>Access Denied</h1>";
 
 <h1>Our Story ❤️</h1>
 
-<p>Nov 19 2024 — Our Anniversary ❤️</p>
-<p>The Log House Trip 🏡</p>
-<p>The Ring 💍</p>
-<p>The Painting 🎨</p>
+<p>Nov 19 2024 — We started dating ❤️</p>
 
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+onSnapshot,
+query,
+orderBy
+}
+from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
 
 const firebaseConfig={
 apiKey:"AIzaSyA5uQg4d-pknrFttsbPx9wG4nsAVtjxNlI",
@@ -195,14 +257,14 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 
 
-/* SAVE MESSAGE */
+/* SEND MESSAGE */
 
-window.saveMessage=async function(){
+window.sendMessage=async function(){
 
 const name=document.getElementById("messageName").value;
 const text=document.getElementById("messageBox").value;
 
-if(text.trim()==="") return;
+if(text.trim()=="") return;
 
 await addDoc(collection(db,"messages"),{
 name:name,
@@ -212,38 +274,14 @@ time:new Date()
 
 document.getElementById("messageBox").value="";
 
-loadMessages();
-
 }
 
 
-/* SAVE LETTER */
+/* REALTIME CHAT */
 
-window.saveLetter=async function(){
+const q=query(collection(db,"messages"),orderBy("time"));
 
-const name=document.getElementById("letterName").value;
-const text=document.getElementById("letterBox").value;
-
-if(text.trim()==="") return;
-
-await addDoc(collection(db,"letters"),{
-name:name,
-letter:text,
-time:new Date()
-});
-
-document.getElementById("letterBox").value="";
-
-loadLetters();
-
-}
-
-
-/* LOAD MESSAGES */
-
-async function loadMessages(){
-
-const snapshot=await getDocs(collection(db,"messages"));
+onSnapshot(q,(snapshot)=>{
 
 const list=document.getElementById("messageList");
 
@@ -255,9 +293,9 @@ const data=doc.data();
 
 const div=document.createElement("div");
 
-div.className="message";
-
 const date=new Date(data.time.seconds*1000);
+
+div.className="message "+(data.name=="Erika"?"right":"left");
 
 div.innerHTML=
 "<div class='name'>"+data.name+"</div>"+
@@ -268,51 +306,31 @@ list.appendChild(div);
 
 });
 
-}
-
-
-/* LOAD LETTERS */
-
-async function loadLetters(){
-
-const snapshot=await getDocs(collection(db,"letters"));
-
-const list=document.getElementById("letterList");
-
-list.innerHTML="";
-
-snapshot.forEach(doc=>{
-
-const data=doc.data();
-
-const div=document.createElement("div");
-
-div.className="message";
-
-const date=new Date(data.time.seconds*1000);
-
-div.innerHTML=
-"<div class='name'>"+data.name+"</div>"+
-"<div>"+data.letter+"</div>"+
-"<div class='time'>"+date.toLocaleString()+"</div>";
-
-list.appendChild(div);
-
 });
 
-}
 
+/* LETTERS */
 
-window.onload=function(){
+window.sendLetter=async function(){
 
-loadMessages();
-loadLetters();
+const name=document.getElementById("letterName").value;
+const text=document.getElementById("letterBox").value;
 
-}
+if(text.trim()=="") return;
+
+await addDoc(collection(db,"letters"),{
+name:name,
+letter:text,
+time:new Date()
+});
+
+};
 
 </script>
 
 <script>
+
+/* PAGE SWITCH */
 
 function showPage(page){
 
@@ -325,8 +343,12 @@ document.getElementById(page).style.display="block";
 
 }
 
+/* ANNIVERSARY COUNTER */
+
 const startDate=new Date("2024-11-19");
+
 const today=new Date();
+
 const diff=Math.floor((today-startDate)/(1000*60*60*24));
 
 document.getElementById("counter").innerText=
