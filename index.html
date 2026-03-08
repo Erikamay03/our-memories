@@ -10,7 +10,7 @@
 <style>
 
 body{
-font-family:'Poppins',sans-serif;
+font-family:'Poppins',century gothic;
 margin:0;
 color:white;
 text-align:center;
@@ -74,6 +74,12 @@ border-radius:12px;
 #messageList{
 max-width:600px;
 margin:auto;
+height:400px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:10px;
+padding:10px;
 }
 
 .message{
@@ -291,7 +297,7 @@ document.getElementById("messageBox").value="";
 
 /* REALTIME CHAT */
 
-const q=query(collection(db,"messages"),orderBy("time"));
+const q=query(collection(db,"messages"),orderBy("time","asc"));
 
 onSnapshot(q,(snapshot)=>{
 
@@ -317,6 +323,8 @@ div.innerHTML=
 list.appendChild(div);
 
 });
+
+list.scrollTop=list.scrollHeight;
 
 });
 
@@ -370,5 +378,6 @@ document.getElementById("counter").innerText=
 
 </body>
 </html>
+
 
 
