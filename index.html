@@ -60,6 +60,18 @@ width:300px;
 
 <body>
 
+<script>
+
+var password="november19";
+
+var user=prompt("Enter password to view our memories ❤️");
+
+if(user!==password){
+document.body.innerHTML="<h1>Access Denied</h1>";
+}
+
+</script>
+
 <nav>
 <button onclick="showPage('gallery')">Gallery</button>
 <button onclick="showPage('messages')">Messages</button>
@@ -98,6 +110,7 @@ width:300px;
 </div>
 
 </div>
+
 </div>
 
 <!-- MESSAGES -->
@@ -168,8 +181,6 @@ appId: "1:1036736307666:web:4d96e6bb4ae2b7bbc0680b"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* SAVE MESSAGE */
-
 window.saveMessage = async function(){
 
 const text=document.getElementById("messageBox").value;
@@ -181,11 +192,11 @@ message:text,
 date:new Date()
 });
 
-alert("Message saved ❤️");
+document.getElementById("messageBox").value="";
+
+loadMessages();
 
 }
-
-/* SAVE LETTER */
 
 window.saveLetter = async function(){
 
@@ -198,15 +209,62 @@ letter:text,
 date:new Date()
 });
 
-alert("Letter saved 💌");
+document.getElementById("letterBox").value="";
+
+loadLetters();
 
 }
+
+async function loadMessages(){
+
+const querySnapshot = await getDocs(collection(db,"messages"));
+
+const list=document.getElementById("messageList");
+
+list.innerHTML="";
+
+querySnapshot.forEach((doc)=>{
+
+const msg=document.createElement("p");
+
+msg.textContent=doc.data().message;
+
+msg.className="message";
+
+list.appendChild(msg);
+
+});
+
+}
+
+async function loadLetters(){
+
+const querySnapshot = await getDocs(collection(db,"letters"));
+
+const list=document.getElementById("letterList");
+
+list.innerHTML="";
+
+querySnapshot.forEach((doc)=>{
+
+const msg=document.createElement("p");
+
+msg.textContent=doc.data().letter;
+
+msg.className="message";
+
+list.appendChild(msg);
+
+});
+
+}
+
+loadMessages();
+loadLetters();
 
 </script>
 
 <script>
-
-/* PAGE SWITCH */
 
 function showPage(page){
 
@@ -218,8 +276,6 @@ document.getElementById("timeline").style.display="none";
 document.getElementById(page).style.display="block";
 
 }
-
-/* ANNIVERSARY COUNTER */
 
 const startDate=new Date("2024-11-19");
 const today=new Date();
