@@ -16,15 +16,10 @@ color:white;
 margin:0;
 padding:30px;
 text-align:center;
-overflow-x:hidden;
 }
 
-/* TITLE */
-
 h1{
-font-size:48px;
-letter-spacing:2px;
-margin-bottom:10px;
+font-size:45px;
 }
 
 /* NAVIGATION */
@@ -42,7 +37,6 @@ color:white;
 border-radius:20px;
 cursor:pointer;
 font-size:16px;
-font-family:'Poppins';
 }
 
 nav button:hover{
@@ -61,9 +55,8 @@ margin:auto;
 
 .photo{
 position:relative;
-overflow:hidden;
 border-radius:15px;
-box-shadow:0 4px 15px rgba(0,0,0,0.6);
+overflow:hidden;
 }
 
 .photo img{
@@ -81,7 +74,6 @@ transform:scale(1.1);
 position:absolute;
 bottom:0;
 background:rgba(0,0,0,0.7);
-color:white;
 width:100%;
 padding:10px;
 opacity:0;
@@ -92,7 +84,7 @@ transition:opacity 0.3s;
 opacity:1;
 }
 
-/* MESSAGE AREA */
+/* MESSAGE + LETTER STYLE */
 
 textarea{
 width:300px;
@@ -102,7 +94,7 @@ border:none;
 font-family:'Poppins';
 }
 
-#messageList p{
+.message{
 background:#2c2c2c;
 padding:10px;
 border-radius:10px;
@@ -110,12 +102,28 @@ margin:10px auto;
 width:300px;
 }
 
-/* FLOATING HEARTS */
+/* TIMELINE */
+
+.timeline{
+max-width:600px;
+margin:auto;
+text-align:left;
+}
+
+.event{
+background:#2c2c2c;
+padding:15px;
+margin:15px 0;
+border-radius:10px;
+border-left:4px solid #ff4da6;
+}
+
+/* HEARTS */
 
 .heart{
 position:fixed;
 color:#ff4da6;
-font-size:22px;
+font-size:20px;
 animation:float 6s linear infinite;
 }
 
@@ -133,9 +141,11 @@ animation:float 6s linear infinite;
 <nav>
 <button onclick="showPage('gallery')">Gallery</button>
 <button onclick="showPage('messages')">Messages</button>
+<button onclick="showPage('letters')">Love Letters</button>
+<button onclick="showPage('timeline')">Timeline</button>
 </nav>
 
-<!-- GALLERY PAGE -->
+<!-- GALLERY -->
 
 <div id="gallery">
 
@@ -146,30 +156,22 @@ animation:float 6s linear infinite;
 <div class="gallery">
 
 <div class="photo">
-<a href="pic1.jpg" target="_blank">
 <img src="pic1.jpg">
-</a>
 <div class="caption">The One Where He Gave Me A Ring</div>
 </div>
 
 <div class="photo">
-<a href="pic2.jpg" target="_blank">
 <img src="pic2.jpg">
-</a>
 <div class="caption">The One Where We Painted</div>
 </div>
 
 <div class="photo">
-<a href="pic3.jpg" target="_blank">
 <img src="pic3.jpg">
-</a>
 <div class="caption">The One In The Log House</div>
 </div>
 
 <div class="photo">
-<a href="pic4.jpg" target="_blank">
 <img src="pic4.jpg">
-</a>
 <div class="caption">The One With Super Caffeine Sickness</div>
 </div>
 
@@ -177,7 +179,7 @@ animation:float 6s linear infinite;
 
 </div>
 
-<!-- MESSAGES PAGE -->
+<!-- MESSAGES -->
 
 <div id="messages" style="display:none">
 
@@ -193,11 +195,55 @@ animation:float 6s linear infinite;
 
 <div id="messageList"></div>
 
-<h2>Upload a Photo</h2>
+</div>
 
-<input type="file" id="photoUpload">
+<!-- LOVE LETTERS -->
 
-<div id="preview"></div>
+<div id="letters" style="display:none">
+
+<h1>Love Letters 💌</h1>
+
+<textarea id="letterBox" placeholder="Write a secret love letter..." rows="5"></textarea>
+
+<br><br>
+
+<button onclick="saveLetter()">Save Letter</button>
+
+<h3>Our Love Letters</h3>
+
+<div id="letterList"></div>
+
+</div>
+
+<!-- TIMELINE -->
+
+<div id="timeline" style="display:none">
+
+<h1>Our Story ❤️</h1>
+
+<div class="timeline">
+
+<div class="event">
+<h3>November 19, 2024</h3>
+<p>Our Anniversary ❤️</p>
+</div>
+
+<div class="event">
+<h3>The Log House Trip</h3>
+<p>The One In The Log House 🏡</p>
+</div>
+
+<div class="event">
+<h3>The Ring</h3>
+<p>The One Where He Gave Me A Ring 💍</p>
+</div>
+
+<div class="event">
+<h3>Painting Together</h3>
+<p>The One Where We Painted 🎨</p>
+</div>
+
+</div>
 
 </div>
 
@@ -211,61 +257,75 @@ animation:float 6s linear infinite;
 
 <script>
 
+/* PASSWORD LOCK */
+
+var password="november19";
+
+var user=prompt("Enter password to view our memories ❤️");
+
+if(user!==password){
+document.body.innerHTML="<h1>Access Denied</h1>";
+}
+
 /* PAGE SWITCH */
 
 function showPage(page){
 
 document.getElementById("gallery").style.display="none";
 document.getElementById("messages").style.display="none";
+document.getElementById("letters").style.display="none";
+document.getElementById("timeline").style.display="none";
 
 document.getElementById(page).style.display="block";
 
 }
 
-/* MESSAGE SYSTEM */
+/* SAVE MESSAGE */
 
 function saveMessage(){
 
-const box = document.getElementById("messageBox");
-const list = document.getElementById("messageList");
+const box=document.getElementById("messageBox");
+const list=document.getElementById("messageList");
 
-if(box.value.trim() === "") return;
+if(box.value.trim()==="")return;
 
-const message = document.createElement("p");
-message.textContent = box.value;
+const msg=document.createElement("p");
+msg.textContent=box.value;
+msg.className="message";
 
-list.appendChild(message);
+list.appendChild(msg);
 
 box.value="";
 
 }
 
-/* PHOTO UPLOAD PREVIEW */
+/* SAVE LETTER */
 
-document.getElementById("photoUpload").addEventListener("change", function(event){
+function saveLetter(){
 
-const preview = document.getElementById("preview");
+const box=document.getElementById("letterBox");
+const list=document.getElementById("letterList");
 
-const img = document.createElement("img");
+if(box.value.trim()==="")return;
 
-img.src = URL.createObjectURL(event.target.files[0]);
+const letter=document.createElement("p");
+letter.textContent=box.value;
+letter.className="message";
 
-img.style.width="200px";
-img.style.margin="10px";
-img.style.borderRadius="10px";
+list.appendChild(letter);
 
-preview.appendChild(img);
+box.value="";
 
-});
+}
 
-/* RELATIONSHIP COUNTER */
+/* ANNIVERSARY COUNTER */
 
-const startDate = new Date("2024-06-01");
-const today = new Date();
-const diff = Math.floor((today - startDate) / (1000*60*60*24));
+const startDate=new Date("2024-11-19");
+const today=new Date();
+const diff=Math.floor((today-startDate)/(1000*60*60*24));
 
-document.getElementById("counter").innerText =
-"We have been together for " + diff + " days ❤️";
+document.getElementById("counter").innerText=
+"We have been together for "+diff+" days ❤️";
 
 </script>
 
