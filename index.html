@@ -2,7 +2,6 @@
 <html>
 
 <head>
-
 <title>Our Memories</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
@@ -13,19 +12,8 @@ body{
 font-family:'Poppins', sans-serif;
 background:#1e1e1e;
 color:white;
-margin:0;
-padding:30px;
 text-align:center;
-}
-
-h1{
-font-size:45px;
-}
-
-/* NAVIGATION */
-
-nav{
-margin-bottom:30px;
+padding:30px;
 }
 
 nav button{
@@ -36,14 +24,7 @@ background:#ff4da6;
 color:white;
 border-radius:20px;
 cursor:pointer;
-font-size:16px;
 }
-
-nav button:hover{
-background:#ff1a8c;
-}
-
-/* GALLERY */
 
 .gallery{
 display:grid;
@@ -53,87 +34,28 @@ max-width:1000px;
 margin:auto;
 }
 
-.photo{
-position:relative;
-border-radius:15px;
-overflow:hidden;
-}
-
 .photo img{
 width:100%;
 height:250px;
 object-fit:cover;
-transition:transform 0.4s;
+border-radius:10px;
 }
-
-.photo:hover img{
-transform:scale(1.1);
-}
-
-.caption{
-position:absolute;
-bottom:0;
-background:rgba(0,0,0,0.7);
-width:100%;
-padding:10px;
-opacity:0;
-transition:opacity 0.3s;
-}
-
-.photo:hover .caption{
-opacity:1;
-}
-
-/* MESSAGE + LETTER STYLE */
 
 textarea{
 width:300px;
 padding:10px;
 border-radius:10px;
-border:none;
-font-family:'Poppins';
 }
 
 .message{
 background:#2c2c2c;
 padding:10px;
-border-radius:10px;
 margin:10px auto;
+border-radius:10px;
 width:300px;
 }
 
-/* TIMELINE */
-
-.timeline{
-max-width:600px;
-margin:auto;
-text-align:left;
-}
-
-.event{
-background:#2c2c2c;
-padding:15px;
-margin:15px 0;
-border-radius:10px;
-border-left:4px solid #ff4da6;
-}
-
-/* HEARTS */
-
-.heart{
-position:fixed;
-color:#ff4da6;
-font-size:20px;
-animation:float 6s linear infinite;
-}
-
-@keyframes float{
-0%{transform:translateY(100vh);}
-100%{transform:translateY(-10vh);}
-}
-
 </style>
-
 </head>
 
 <body>
@@ -157,26 +79,25 @@ animation:float 6s linear infinite;
 
 <div class="photo">
 <img src="pic1.jpg">
-<div class="caption">The One Where He Gave Me A Ring</div>
+<p>The One Where He Gave Me A Ring</p>
 </div>
 
 <div class="photo">
 <img src="pic2.jpg">
-<div class="caption">The One Where We Painted</div>
+<p>The One Where We Painted</p>
 </div>
 
 <div class="photo">
 <img src="pic3.jpg">
-<div class="caption">The One In The Log House</div>
+<p>The One In The Log House</p>
 </div>
 
 <div class="photo">
 <img src="pic4.jpg">
-<div class="caption">The One With Super Caffeine Sickness</div>
+<p>The One With Super Caffeine Sickness</p>
 </div>
 
 </div>
-
 </div>
 
 <!-- MESSAGES -->
@@ -185,7 +106,7 @@ animation:float 6s linear infinite;
 
 <h1>Messages For Each Other ❤️</h1>
 
-<textarea id="messageBox" placeholder="Write a message..." rows="5"></textarea>
+<textarea id="messageBox"></textarea>
 
 <br><br>
 
@@ -203,7 +124,7 @@ animation:float 6s linear infinite;
 
 <h1>Love Letters 💌</h1>
 
-<textarea id="letterBox" placeholder="Write a secret love letter..." rows="5"></textarea>
+<textarea id="letterBox"></textarea>
 
 <br><br>
 
@@ -221,51 +142,69 @@ animation:float 6s linear infinite;
 
 <h1>Our Story ❤️</h1>
 
-<div class="timeline">
-
-<div class="event">
-<h3>November 19, 2024</h3>
-<p>Our Anniversary ❤️</p>
-</div>
-
-<div class="event">
-<h3>The Log House Trip</h3>
-<p>The One In The Log House 🏡</p>
-</div>
-
-<div class="event">
-<h3>The Ring</h3>
-<p>The One Where He Gave Me A Ring 💍</p>
-</div>
-
-<div class="event">
-<h3>Painting Together</h3>
-<p>The One Where We Painted 🎨</p>
-</div>
+<p>Nov 19 2024 — Our Anniversary ❤️</p>
+<p>The Log House Trip 🏡</p>
+<p>The Ring 💍</p>
+<p>The Painting 🎨</p>
 
 </div>
 
-</div>
+<!-- FIREBASE -->
 
-<!-- FLOATING HEARTS -->
+<script type="module">
 
-<div class="heart" style="left:10%">❤️</div>
-<div class="heart" style="left:30%">❤️</div>
-<div class="heart" style="left:50%">❤️</div>
-<div class="heart" style="left:70%">❤️</div>
-<div class="heart" style="left:90%">❤️</div>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyA5uQg4d-pknrFttsbPx9wG4nsAVtjxNlI",
+authDomain: "our-memories-66277.firebaseapp.com",
+projectId: "our-memories-66277",
+storageBucket: "our-memories-66277.firebasestorage.app",
+messagingSenderId: "1036736307666",
+appId: "1:1036736307666:web:4d96e6bb4ae2b7bbc0680b"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* SAVE MESSAGE */
+
+window.saveMessage = async function(){
+
+const text=document.getElementById("messageBox").value;
+
+if(text.trim()==="") return;
+
+await addDoc(collection(db,"messages"),{
+message:text,
+date:new Date()
+});
+
+alert("Message saved ❤️");
+
+}
+
+/* SAVE LETTER */
+
+window.saveLetter = async function(){
+
+const text=document.getElementById("letterBox").value;
+
+if(text.trim()==="") return;
+
+await addDoc(collection(db,"letters"),{
+letter:text,
+date:new Date()
+});
+
+alert("Letter saved 💌");
+
+}
+
+</script>
 
 <script>
-
-/* PASSWORD LOCK */
-
-var password="november19";
-
-var user=prompt("Enter password to view our memories ❤️");
-
-if(user!==password){
-document.body.innerHTML="<h1>Access Denied</h1>";
-}
 
 /* PAGE SWITCH */
 
@@ -277,44 +216,6 @@ document.getElementById("letters").style.display="none";
 document.getElementById("timeline").style.display="none";
 
 document.getElementById(page).style.display="block";
-
-}
-
-/* SAVE MESSAGE */
-
-function saveMessage(){
-
-const box=document.getElementById("messageBox");
-const list=document.getElementById("messageList");
-
-if(box.value.trim()==="")return;
-
-const msg=document.createElement("p");
-msg.textContent=box.value;
-msg.className="message";
-
-list.appendChild(msg);
-
-box.value="";
-
-}
-
-/* SAVE LETTER */
-
-function saveLetter(){
-
-const box=document.getElementById("letterBox");
-const list=document.getElementById("letterList");
-
-if(box.value.trim()==="")return;
-
-const letter=document.createElement("p");
-letter.textContent=box.value;
-letter.className="message";
-
-list.appendChild(letter);
-
-box.value="";
 
 }
 
@@ -330,5 +231,4 @@ document.getElementById("counter").innerText=
 </script>
 
 </body>
-
 </html>
