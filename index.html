@@ -566,7 +566,7 @@ div.className="message "+(data.name===currentUser?"right":"left");
 div.innerHTML=
 "<div class='name'>"+data.name+"</div>"+
 "<div>"+data.message+"</div>"+
-"<button class='reactBtn' onclick='reactHeart(\""+docSnap.id+"\")'>❤️ "+(data.hearts||0)+"</button>"+
+"<button class='reactBtn' onclick='reactHeart(\""+docSnap.id+"\")'>❤️ "+(data.hearts || 0)+"</button>"+
 "<div class='time'>"+date.toLocaleString()+" "+seen+"</div>";
 
 list.appendChild(div);
@@ -724,6 +724,7 @@ counter.innerText="We have been together for "+diff+" days ❤️";
 
 </body>
 </html>
+
 
 
 
