@@ -124,6 +124,16 @@ font-size:11px;
 opacity:0.7;
 }
 
+.badge{
+background:red;
+color:white;
+font-size:12px;
+padding:3px 7px;
+border-radius:50%;
+margin-left:6px;
+display:none;
+}
+
 /* REACTION */
 
 .reactBtn{
@@ -320,8 +330,15 @@ opacity:1;
 <nav>
 
 <button onclick="showPage('gallery')">Gallery</button>
-<button onclick="showPage('messages')">Messages</button>
-<button onclick="showPage('letters')">Love Letters</button>
+
+<button onclick="showPage('messages')" id="messagesTab">
+Messages <span id="msgBadge" class="badge"></span>
+</button>
+
+<button onclick="showPage('letters')" id="lettersTab">
+Love Letters <span id="letterBadge" class="badge"></span>
+</button>
+
 <button onclick="showPage('timeline')">Timeline</button>
   
 </nav>
@@ -487,6 +504,11 @@ appId:"1:1036736307666:web:4d96e6bb4ae2b7bbc0680b"
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 
+/* UNREAD COUNTERS */
+
+let unreadMessages = 0;
+let unreadLetters = 0;
+
 /* SEND MESSAGE */
 
 window.sendMessage=async function(){
@@ -512,6 +534,10 @@ const q=query(collection(db,"messages"),orderBy("time","asc"));
 
 onSnapshot(q,(snapshot)=>{
 
+if(document.getElementById("messages").style.display==="none"){
+document.getElementById("msgBadge").style.display="inline";
+}
+
 const list=document.getElementById("messageList");
 
 const nearBottom=list.scrollHeight - list.scrollTop - list.clientHeight < 100;
@@ -525,7 +551,7 @@ const date=new Date(data.time.seconds*1000);
 
 const div=document.createElement("div");
 
-div.className="message "+(data.name==="Erika"?"right":"left");
+div.className="message "+(data.name===currentUser?"right":"left");
 
 div.innerHTML=
 "<div class='name'>"+data.name+"</div>"+
@@ -586,6 +612,15 @@ const letterQuery=query(collection(db,"letters"),orderBy("time","desc"));
 
 onSnapshot(letterQuery,(snapshot)=>{
 
+unreadLetters = snapshot.size;
+
+if(document.getElementById("letters").style.display==="none"){
+
+document.getElementById("letterBadge").style.display="inline";
+document.getElementById("letterBadge").innerText = unreadLetters;
+
+}
+  
 const list=document.getElementById("letterList");
 
 list.innerHTML="";
@@ -651,6 +686,20 @@ document.getElementById("timeline").style.display="none";
 
 document.getElementById(page).style.display="block";
 
+if(page==="messages"){
+
+unreadMessages = 0;
+document.getElementById("msgBadge").style.display="none";
+
+}
+
+if(page==="letters"){
+
+unreadLetters = 0;
+document.getElementById("letterBadge").style.display="none";
+
+}
+
 }
 
 const startDate=new Date("2024-11-19");
@@ -664,6 +713,7 @@ document.getElementById("counter").innerText=
 
 </body>
 </html>
+
 
 
 
