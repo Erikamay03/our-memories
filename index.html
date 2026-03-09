@@ -553,7 +553,7 @@ if(!data.seenBy || !data.seenBy.includes(currentUser)){
 unread++;
 
 updateDoc(doc(db,"messages",docSnap.id),{
-seenBy:[...data.seenBy,currentUser]
+seenBy:[...(data.seenBy || []),currentUser]
 });
 }
 
@@ -656,10 +656,10 @@ envelope.onclick=function(){
 
 envelope.classList.toggle("open");
 
-if(!data.seenBy.includes(currentUser)){
+if(!data.seenBy || !data.seenBy.includes(currentUser)){
 
 updateDoc(doc(db,"letters",docSnap.id),{
-seenBy:[...data.seenBy,currentUser]
+seenBy:[...(data.seenBy || []),currentUser]
 });
 
 }
@@ -724,6 +724,7 @@ counter.innerText="We have been together for "+diff+" days ❤️";
 
 </body>
 </html>
+
 
 
 
