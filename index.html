@@ -101,6 +101,11 @@ opacity:0.7;
 margin-bottom:4px;
 }
 
+.message{
+position:relative;
+z-index:1;
+}
+
 .left{
 background:#2a2a33;
 align-self:flex-start;
@@ -290,6 +295,36 @@ transform:rotateX(180deg);
 .envelope.open .letter{
 transform:translateY(-20px);
 opacity:1;
+}
+
+/* CHAT BACKGROUND BUBBLES */
+
+#messages{
+position:relative;
+overflow:hidden;
+}
+
+#messages::before,
+#messages::after{
+content:"";
+position:absolute;
+border-radius:50%;
+background:rgba(255,255,255,0.05);
+z-index:0;
+}
+
+#messages::before{
+width:300px;
+height:300px;
+top:-100px;
+left:-100px;
+}
+
+#messages::after{
+width:250px;
+height:250px;
+bottom:-120px;
+right:-120px;
 }
 
 </style>
@@ -639,7 +674,10 @@ snapshot.forEach(docSnap=>{
 const data=docSnap.data();
 const date=new Date(data.time.seconds*1000);
 
-if(!data.seenBy || !data.seenBy.includes(currentUser)){
+if(
+data.to === currentUser &&
+(!data.seenBy || !data.seenBy.includes(currentUser))
+){
 unread++;
 }
 
@@ -728,6 +766,7 @@ counter.innerText="We have been together for "+diff+" days ❤️";
 
 </body>
 </html>
+
 
 
 
