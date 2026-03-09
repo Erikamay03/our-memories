@@ -19,7 +19,6 @@ margin:0;
 color:white;
 text-align:center;
 min-height:100vh;
-
 background-image:url("background.jpg");
 background-size:cover;
 background-position:center;
@@ -42,6 +41,19 @@ color:white;
 border-radius:25px;
 cursor:pointer;
 font-weight:500;
+}
+
+/* USER SELECT */
+
+.userBtn{
+padding:12px 20px;
+margin:10px;
+border:none;
+border-radius:25px;
+background:#ff4da6;
+color:white;
+font-weight:bold;
+cursor:pointer;
 }
 
 /* GALLERY */
@@ -72,7 +84,7 @@ display:flex;
 flex-direction:column;
 gap:10px;
 padding:10px;
-padding-bottom:100px;
+padding-bottom:120px;
 }
 
 .message{
@@ -101,6 +113,30 @@ font-size:11px;
 opacity:0.7;
 }
 
+/* REACTION */
+
+.reactBtn{
+border:none;
+background:none;
+cursor:pointer;
+font-size:18px;
+}
+
+/* NEW MESSAGE BUTTON */
+
+#newMsgBtn{
+position:fixed;
+bottom:80px;
+right:20px;
+background:#ff4da6;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:20px;
+cursor:pointer;
+display:none;
+}
+
 /* CHAT INPUT BAR */
 
 .chatInput{
@@ -118,18 +154,11 @@ box-shadow:0 -2px 10px rgba(0,0,0,0.4);
 }
 
 .chatInput textarea{
-width:45%;
+width:60%;
 height:40px;
 resize:none;
 border-radius:10px;
 padding:8px;
-border:none;
-}
-
-.chatInput input{
-width:120px;
-padding:8px;
-border-radius:10px;
 border:none;
 }
 
@@ -174,16 +203,6 @@ width:200px;
 text-align:center;
 }
 
-#loginBox button{
-margin-top:10px;
-padding:10px 20px;
-border:none;
-border-radius:10px;
-background:#ff4da6;
-color:white;
-cursor:pointer;
-}
-
 /* LETTERS */
 
 #letterList{
@@ -195,7 +214,7 @@ gap:10px;
 padding:10px;
 }
 
-/* ENVELOPE LETTERS */
+/* ENVELOPE */
 
 .envelope{
 width:260px;
@@ -252,44 +271,11 @@ transform:translateY(-20px);
 opacity:1;
 }
 
-/* MOBILE */
-
-@media (max-width:768px){
-
-.gallery{
-grid-template-columns:1fr;
-}
-
-.photo img{
-height:auto;
-}
-
-#messageList{
-height:65vh;
-width:95%;
-}
-
-#letterList{
-width:95%;
-}
-
-.chatInput textarea{
-width:40%;
-}
-
-h1{
-font-size:26px;
-}
-
-}
-
 </style>
 
 </head>
 
 <body>
-
-<!-- LOGIN SCREEN -->
 
 <div id="loginScreen">
 
@@ -305,6 +291,15 @@ font-size:26px;
 
 <button onclick="checkPassword()">Enter</button>
 
+<div id="userSelect" style="display:none">
+
+<p>Who is using the app?</p>
+
+<button class="userBtn" onclick="selectUser('Erika')">Erika</button>
+<button class="userBtn" onclick="selectUser('Gerardo')">Gerardo</button>
+
+</div>
+
 </div>
 
 </div>
@@ -317,7 +312,7 @@ font-size:26px;
 <button onclick="showPage('messages')">Messages</button>
 <button onclick="showPage('letters')">Love Letters</button>
 <button onclick="showPage('timeline')">Timeline</button>
-
+  
 </nav>
 
 <!-- GALLERY -->
@@ -379,11 +374,11 @@ font-size:26px;
 
 <h1>Chat ❤️</h1>
 
+<button id="newMsgBtn">New messages ↓</button>
+
 <div id="messageList"></div>
 
 <div class="chatInput">
-
-<input id="messageName" placeholder="Your name">
 
 <textarea id="messageBox" placeholder="Type a message..."></textarea>
 
@@ -393,17 +388,20 @@ font-size:26px;
 
 </div>
 
-<!-- LOVE LETTERS -->
-
 <div id="letters" style="display:none">
 
 <h1>Love Letters 💌</h1>
 
-<input id="letterName" placeholder="Your name">
+<label>To:</label>
 
-<br>
+<select id="letterTo">
+<option value="Gerardo">Gerardo</option>
+<option value="Erika">Erika</option>
+</select>
 
-<textarea id="letterBox"></textarea>
+<br><br>
+
+<textarea id="letterBox" placeholder="Write your letter..."></textarea>
 
 <br>
 
@@ -412,8 +410,6 @@ font-size:26px;
 <div id="letterList"></div>
 
 </div>
-
-<!-- TIMELINE -->
 
 <div id="timeline" style="display:none">
 
@@ -427,6 +423,8 @@ font-size:26px;
 
 <script>
 
+let currentUser="";
+
 function checkPassword(){
 
 var password="111924";
@@ -434,10 +432,18 @@ var input=document.getElementById("passwordInput").value;
 
 if(input===password){
 
-document.getElementById("loginScreen").style.display="none";
-document.getElementById("mainSite").style.display="block";
+document.getElementById("userSelect").style.display="block";
 
 }
+
+}
+
+function selectUser(user){
+
+currentUser=user;
+
+document.getElementById("loginScreen").style.display="none";
+document.getElementById("mainSite").style.display="block";
 
 }
 
@@ -453,9 +459,10 @@ collection,
 addDoc,
 onSnapshot,
 query,
-orderBy
-}
-from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+orderBy,
+doc,
+updateDoc
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyA5uQg4d-pknrFttsbPx9wG4nsAVtjxNlI",
@@ -469,28 +476,26 @@ appId:"1:1036736307666:web:4d96e6bb4ae2b7bbc0680b"
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 
-
 /* SEND MESSAGE */
 
 window.sendMessage=async function(){
 
-const name=document.getElementById("messageName").value;
 const text=document.getElementById("messageBox").value;
 
 if(text.trim()=="") return;
 
 await addDoc(collection(db,"messages"),{
-name:name,
+name:currentUser,
 message:text,
-time:new Date()
+time:new Date(),
+hearts:0
 });
 
 document.getElementById("messageBox").value="";
 
 }
 
-
-/* REALTIME CHAT */
+/* CHAT */
 
 const q=query(collection(db,"messages"),orderBy("time","asc"));
 
@@ -498,43 +503,66 @@ onSnapshot(q,(snapshot)=>{
 
 const list=document.getElementById("messageList");
 
+const nearBottom=list.scrollHeight - list.scrollTop - list.clientHeight < 100;
+
 list.innerHTML="";
 
-snapshot.forEach(doc=>{
+snapshot.forEach(docSnap=>{
 
-const data=doc.data();
+const data=docSnap.data();
+const date=new Date(data.time.seconds*1000);
 
 const div=document.createElement("div");
 
-const date=new Date(data.time.seconds*1000);
-
-div.className="message "+(data.name=="Erika"?"right":"left");
+div.className="message "+(data.name==="Erika"?"right":"left");
 
 div.innerHTML=
 "<div class='name'>"+data.name+"</div>"+
 "<div>"+data.message+"</div>"+
+"<button class='reactBtn' onclick='reactHeart(\""+docSnap.id+"\")'>❤️ "+(data.hearts||0)+"</button>"+
 "<div class='time'>"+date.toLocaleString()+"</div>";
 
 list.appendChild(div);
 
 });
 
+if(nearBottom){
+
 list.scrollTop=list.scrollHeight;
+
+}else{
+
+document.getElementById("newMsgBtn").style.display="block";
+
+}
 
 });
 
+/* HEART */
 
-/* SEND LETTER */
+window.reactHeart=async function(id){
+
+const ref=doc(db,"messages",id);
+const el=document.querySelector("[onclick='reactHeart(\""+id+"\")']");
+
+let count=parseInt(el.innerText.replace("❤️",""))||0;
+
+count++;
+
+await updateDoc(ref,{hearts:count});
+
+}
+
+/* LETTER */
 
 window.sendLetter=async function(){
 
-const name=document.getElementById("letterName").value;
+const to=document.getElementById("letterTo").value;
 const text=document.getElementById("letterBox").value;
 
-if(text.trim()=="") return;
-
 await addDoc(collection(db,"letters"),{
-name:name,
+from:currentUser,
+to:to,
 letter:text,
 time:new Date()
 });
@@ -543,32 +571,32 @@ document.getElementById("letterBox").value="";
 
 }
 
-
-/* REALTIME LETTERS */
-
 const letterQuery=query(collection(db,"letters"),orderBy("time","asc"));
 
 onSnapshot(letterQuery,(snapshot)=>{
 
 const list=document.getElementById("letterList");
+
 list.innerHTML="";
 
-snapshot.forEach(doc=>{
+snapshot.forEach(docSnap=>{
 
-const data=doc.data();
+const data=docSnap.data();
 const date=new Date(data.time.seconds*1000);
 
 const envelope=document.createElement("div");
+
 envelope.className="envelope";
 
 envelope.innerHTML=
-"<div class='envelopeBody'></div>"+
+"<div class='envelopeBody'><div style='position:absolute;top:60px;width:100%;text-align:center;font-weight:bold;'>To: "+data.to+"</div></div>"+
 "<div class='envelopeFlap'></div>"+
-"<div class='letter'><b>"+data.name+"</b><br><br>"+data.letter+
-"<br><br><small>"+date.toLocaleString()+"</small></div>";
+"<div class='letter'><b>To: "+data.to+"</b><br><br><i>From: "+data.from+"</i><br><br>"+data.letter+"<br><br><small>"+date.toLocaleString()+"</small></div>";
 
 envelope.onclick=function(){
+
 envelope.classList.toggle("open");
+
 }
 
 list.appendChild(envelope);
@@ -581,7 +609,15 @@ list.appendChild(envelope);
 
 <script>
 
-/* ENTER KEY SEND MESSAGE */
+document.getElementById("newMsgBtn").onclick=function(){
+
+const list=document.getElementById("messageList");
+
+list.scrollTop=list.scrollHeight;
+
+this.style.display="none";
+
+}
 
 document.addEventListener("keydown",function(e){
 
@@ -591,8 +627,6 @@ sendMessage();
 }
 
 });
-
-/* PAGE SWITCH */
 
 function showPage(page){
 
@@ -605,8 +639,6 @@ document.getElementById(page).style.display="block";
 
 }
 
-/* ANNIVERSARY COUNTER */
-
 const startDate=new Date("2024-11-19");
 const today=new Date();
 const diff=Math.floor((today-startDate)/(1000*60*60*24));
@@ -618,6 +650,7 @@ document.getElementById("counter").innerText=
 
 </body>
 </html>
+
 
 
 
