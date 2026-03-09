@@ -17,12 +17,46 @@ margin:0;
 color:white;
 text-align:center;
 min-height:100vh;
-
 background-image:url("background.jpg");
 background-size:cover;
 background-position:center;
 background-repeat:no-repeat;
 background-attachment:fixed;
+}
+
+/* LOGIN SCREEN */
+
+#loginScreen{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:999;
+}
+
+#loginScreen input{
+padding:12px;
+border-radius:10px;
+border:none;
+margin-top:10px;
+width:200px;
+text-align:center;
+}
+
+#loginScreen button{
+margin-top:10px;
+padding:10px 20px;
+border:none;
+border-radius:10px;
+background:#ff4da6;
+color:white;
+cursor:pointer;
 }
 
 /* NAV */
@@ -39,7 +73,6 @@ background:#ff4da6;
 color:white;
 border-radius:25px;
 cursor:pointer;
-font-weight:500;
 }
 
 /* GALLERY */
@@ -99,7 +132,7 @@ font-size:11px;
 opacity:0.7;
 }
 
-/* CHAT INPUT BAR */
+/* CHAT BAR */
 
 .chatInput{
 position:fixed;
@@ -112,7 +145,6 @@ display:flex;
 gap:10px;
 justify-content:center;
 align-items:center;
-box-shadow:0 -2px 10px rgba(0,0,0,0.4);
 }
 
 .chatInput textarea{
@@ -140,17 +172,6 @@ border-radius:10px;
 cursor:pointer;
 }
 
-/* LETTERS */
-
-#letterList{
-max-width:600px;
-margin:auto;
-display:flex;
-flex-direction:column;
-gap:10px;
-padding:10px;
-}
-
 /* MOBILE */
 
 @media (max-width:768px){
@@ -168,16 +189,8 @@ height:65vh;
 width:95%;
 }
 
-#letterList{
-width:95%;
-}
-
 .chatInput textarea{
 width:40%;
-}
-
-h1{
-font-size:26px;
 }
 
 }
@@ -186,27 +199,25 @@ font-size:26px;
 
 </head>
 
-<body style="display:none;">
+<body>
 
-<script>
+<!-- LOGIN SCREEN -->
 
-/* PASSWORD LOCK WITH BLACK SCREEN */
+<div id="loginScreen">
 
-var password="111924";
-var user=prompt("Enter password ❤️");
+<h1>❤️ Our Memories ❤️</h1>
 
-if(user===password){
+<p>Enter Password</p>
 
-document.body.style.display="block";
+<input type="password" id="passwordInput">
 
-}else{
+<button onclick="checkPassword()">Open</button>
 
-document.body.style.background="black";
-document.body.innerHTML="";
+</div>
 
-}
+<!-- WEBSITE CONTENT -->
 
-</script>
+<div id="mainSite" style="display:none;">
 
 <nav>
 
@@ -244,26 +255,6 @@ document.body.innerHTML="";
 <div class="photo">
 <img src="pic4.jpg">
 <p>The One With Too Much Caffeine</p>
-</div>
-
-<div class="photo">
-<img src="The One Where We Got Bored Together.jpg">
-<p>The One Where We Got Bored Together</p>
-</div>
-
-<div class="photo">
-<img src="The One With The First Anniversary.jpg">
-<p>The One With The First Anniversary</p>
-</div>
-
-<div class="photo">
-<img src="The One Where She Got Annoyed With Him.jpg">
-<p>The One Where She Got Annoyed With Him</p>
-</div>
-
-<div class="photo">
-<img src="The One With Yuki.jpg">
-<p>The One With Yuki</p>
 </div>
 
 </div>
@@ -310,183 +301,30 @@ document.body.innerHTML="";
 
 </div>
 
-<!-- TIMELINE -->
-
-<div id="timeline" style="display:none">
-
-<h1>Our Story ❤️</h1>
-
-<p>Nov 19 2024 — We started dating ❤️</p>
-
 </div>
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-
-import {
-getFirestore,
-collection,
-addDoc,
-onSnapshot,
-query,
-orderBy
-}
-from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyA5uQg4d-pknrFttsbPx9wG4nsAVtjxNlI",
-authDomain:"our-memories-66277.firebaseapp.com",
-projectId:"our-memories-66277",
-storageBucket:"our-memories-66277.firebasestorage.app",
-messagingSenderId:"1036736307666",
-appId:"1:1036736307666:web:4d96e6bb4ae2b7bbc0680b"
-};
-
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
-
-
-/* SEND MESSAGE */
-
-window.sendMessage=async function(){
-
-const name=document.getElementById("messageName").value;
-const text=document.getElementById("messageBox").value;
-
-if(text.trim()=="") return;
-
-await addDoc(collection(db,"messages"),{
-name:name,
-message:text,
-time:new Date()
-});
-
-document.getElementById("messageBox").value="";
-
-}
-
-
-/* REALTIME CHAT */
-
-const q=query(collection(db,"messages"),orderBy("time","asc"));
-
-onSnapshot(q,(snapshot)=>{
-
-const list=document.getElementById("messageList");
-
-list.innerHTML="";
-
-snapshot.forEach(doc=>{
-
-const data=doc.data();
-
-const div=document.createElement("div");
-
-const date=new Date(data.time.seconds*1000);
-
-div.className="message "+(data.name=="Erika"?"right":"left");
-
-div.innerHTML=
-"<div class='name'>"+data.name+"</div>"+
-"<div>"+data.message+"</div>"+
-"<div class='time'>"+date.toLocaleString()+"</div>";
-
-list.appendChild(div);
-
-});
-
-list.scrollTop=list.scrollHeight;
-
-});
-
-
-/* SEND LETTER */
-
-window.sendLetter=async function(){
-
-const name=document.getElementById("letterName").value;
-const text=document.getElementById("letterBox").value;
-
-if(text.trim()=="") return;
-
-await addDoc(collection(db,"letters"),{
-name:name,
-letter:text,
-time:new Date()
-});
-
-document.getElementById("letterBox").value="";
-
-}
-
-
-/* REALTIME LETTERS */
-
-const letterQuery=query(collection(db,"letters"),orderBy("time","asc"));
-
-onSnapshot(letterQuery,(snapshot)=>{
-
-const list=document.getElementById("letterList");
-
-list.innerHTML="";
-
-snapshot.forEach(doc=>{
-
-const data=doc.data();
-const div=document.createElement("div");
-
-const date=new Date(data.time.seconds*1000);
-
-div.className="message left";
-
-div.innerHTML=
-"<div class='name'>"+data.name+"</div>"+
-"<div>"+data.letter+"</div>"+
-"<div class='time'>"+date.toLocaleString()+"</div>";
-
-list.appendChild(div);
-
-});
-
-});
-
-</script>
 
 <script>
 
-/* ENTER KEY SEND MESSAGE */
+/* PASSWORD SYSTEM */
 
-document.addEventListener("keydown",function(e){
+function checkPassword(){
 
-if(e.key==="Enter" && document.activeElement.id==="messageBox"){
-e.preventDefault();
-sendMessage();
-}
+var password="111924";
 
-});
+var input=document.getElementById("passwordInput").value;
 
-/* PAGE SWITCH */
+if(input===password){
 
-function showPage(page){
+document.getElementById("loginScreen").style.display="none";
+document.getElementById("mainSite").style.display="block";
 
-document.getElementById("gallery").style.display="none";
-document.getElementById("messages").style.display="none";
-document.getElementById("letters").style.display="none";
-document.getElementById("timeline").style.display="none";
+}else{
 
-document.getElementById(page).style.display="block";
+document.body.style.background="black";
 
 }
 
-/* ANNIVERSARY COUNTER */
-
-const startDate=new Date("2024-11-19");
-const today=new Date();
-const diff=Math.floor((today-startDate)/(1000*60*60*24));
-
-document.getElementById("counter").innerText=
-"We have been together for "+diff+" days ❤️";
+}
 
 </script>
 
