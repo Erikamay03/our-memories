@@ -12,7 +12,7 @@
 <style>
 
 body{
-font-family:'Poppins',century gothic;
+font-family:'Poppins',sans-serif;
 margin:0;
 color:white;
 text-align:center;
@@ -22,41 +22,6 @@ background-size:cover;
 background-position:center;
 background-repeat:no-repeat;
 background-attachment:fixed;
-}
-
-/* LOGIN SCREEN */
-
-#loginScreen{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:black;
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:999;
-}
-
-#loginScreen input{
-padding:12px;
-border-radius:10px;
-border:none;
-margin-top:10px;
-width:200px;
-text-align:center;
-}
-
-#loginScreen button{
-margin-top:10px;
-padding:10px 20px;
-border:none;
-border-radius:10px;
-background:#ff4da6;
-color:white;
-cursor:pointer;
 }
 
 /* NAV */
@@ -132,7 +97,7 @@ font-size:11px;
 opacity:0.7;
 }
 
-/* CHAT BAR */
+/* CHAT INPUT */
 
 .chatInput{
 position:fixed;
@@ -172,6 +137,66 @@ border-radius:10px;
 cursor:pointer;
 }
 
+/* ENVELOPE */
+
+.envelope{
+width:260px;
+height:180px;
+margin:20px auto;
+position:relative;
+cursor:pointer;
+perspective:1000px;
+}
+
+.envelopeBody{
+width:100%;
+height:100%;
+background:#ff4da6;
+border-radius:6px;
+position:absolute;
+}
+
+.envelopeFlap{
+position:absolute;
+top:0;
+width:0;
+height:0;
+border-left:130px solid transparent;
+border-right:130px solid transparent;
+border-top:90px solid #ff6aa8;
+transform-origin:top;
+transition:transform 0.6s;
+}
+
+.letter{
+position:absolute;
+top:20px;
+left:10px;
+width:240px;
+height:140px;
+background:#fffaf0;
+color:black;
+padding:15px;
+box-sizing:border-box;
+border-radius:6px;
+transform:translateY(80px);
+opacity:0;
+transition:all 0.6s;
+font-size:14px;
+text-align:left;
+}
+
+/* OPEN STATE */
+
+.envelope.open .envelopeFlap{
+transform:rotateX(180deg);
+}
+
+.envelope.open .letter{
+transform:translateY(-10px);
+opacity:1;
+}
+
 /* MOBILE */
 
 @media (max-width:768px){
@@ -201,23 +226,17 @@ width:40%;
 
 <body>
 
-<!-- LOGIN SCREEN -->
+<script>
 
-<div id="loginScreen">
+var password="111924";
+var user=prompt("Enter password ❤️");
 
-<h1>❤️ Our Memories ❤️</h1>
+if(user!==password){
+document.body.innerHTML="";
+document.body.style.background="black";
+}
 
-<p>Enter Password</p>
-
-<input type="password" id="passwordInput">
-
-<button onclick="checkPassword()">Open</button>
-
-</div>
-
-<!-- WEBSITE CONTENT -->
-
-<div id="mainSite" style="display:none;">
+</script>
 
 <nav>
 
@@ -301,30 +320,176 @@ width:40%;
 
 </div>
 
+<!-- TIMELINE -->
+
+<div id="timeline" style="display:none">
+
+<h1>Our Story ❤️</h1>
+
+<p>Nov 19 2024 — We started dating ❤️</p>
+
 </div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+
+import {getFirestore,collection,addDoc,onSnapshot,query,orderBy}
+from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyA5uQg4d-pknrFttsbPx9wG4nsAVtjxNlI",
+authDomain:"our-memories-66277.firebaseapp.com",
+projectId:"our-memories-66277",
+storageBucket:"our-memories-66277.firebasestorage.app",
+messagingSenderId:"1036736307666",
+appId:"1:1036736307666:web:4d96e6bb4ae2b7bbc0680b"
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+
+/* SEND MESSAGE */
+
+window.sendMessage=async function(){
+
+const name=document.getElementById("messageName").value;
+const text=document.getElementById("messageBox").value;
+
+if(text.trim()=="") return;
+
+await addDoc(collection(db,"messages"),{
+name:name,
+message:text,
+time:new Date()
+});
+
+document.getElementById("messageBox").value="";
+}
+
+/* REALTIME CHAT */
+
+const q=query(collection(db,"messages"),orderBy("time","asc"));
+
+onSnapshot(q,(snapshot)=>{
+
+const list=document.getElementById("messageList");
+
+list.innerHTML="";
+
+snapshot.forEach(doc=>{
+
+const data=doc.data();
+const div=document.createElement("div");
+const date=new Date(data.time.seconds*1000);
+
+div.className="message "+(data.name=="Erika"?"right":"left");
+
+div.innerHTML=
+"<div class='name'>"+data.name+"</div>"+
+"<div>"+data.message+"</div>"+
+"<div class='time'>"+date.toLocaleString()+"</div>";
+
+list.appendChild(div);
+
+});
+
+list.scrollTop=list.scrollHeight;
+
+});
+
+/* SEND LETTER */
+
+window.sendLetter=async function(){
+
+const name=document.getElementById("letterName").value;
+const text=document.getElementById("letterBox").value;
+
+if(text.trim()=="") return;
+
+await addDoc(collection(db,"letters"),{
+name:name,
+letter:text,
+time:new Date()
+});
+
+document.getElementById("letterBox").value="";
+}
+
+/* REALTIME ENVELOPE LETTERS */
+
+const letterQuery=query(collection(db,"letters"),orderBy("time","asc"));
+
+onSnapshot(letterQuery,(snapshot)=>{
+
+const list=document.getElementById("letterList");
+
+list.innerHTML="";
+
+snapshot.forEach(doc=>{
+
+const data=doc.data();
+const date=new Date(data.time.seconds*1000);
+
+const envelope=document.createElement("div");
+
+envelope.className="envelope";
+
+envelope.innerHTML=
+"<div class='envelopeBody'></div>"+
+"<div class='envelopeFlap'></div>"+
+"<div class='letter'>"+
+"<b>"+data.name+"</b><br><br>"+
+data.letter+
+"<br><br><small>"+date.toLocaleString()+"</small>"+
+"</div>";
+
+envelope.onclick=function(){
+envelope.classList.toggle("open");
+}
+
+list.appendChild(envelope);
+
+});
+
+});
+
+</script>
 
 <script>
 
-/* PASSWORD SYSTEM */
+/* ENTER SEND */
 
-function checkPassword(){
+document.addEventListener("keydown",function(e){
 
-var password="111924";
+if(e.key==="Enter" && document.activeElement.id==="messageBox"){
+e.preventDefault();
+sendMessage();
+}
 
-var input=document.getElementById("passwordInput").value;
+});
 
-if(input===password){
+/* PAGE SWITCH */
 
-document.getElementById("loginScreen").style.display="none";
-document.getElementById("mainSite").style.display="block";
+function showPage(page){
 
-}else{
+document.getElementById("gallery").style.display="none";
+document.getElementById("messages").style.display="none";
+document.getElementById("letters").style.display="none";
+document.getElementById("timeline").style.display="none";
 
-document.body.style.background="black";
+document.getElementById(page).style.display="block";
 
 }
 
-}
+/* ANNIVERSARY COUNTER */
+
+const startDate=new Date("2024-11-19");
+const today=new Date();
+const diff=Math.floor((today-startDate)/(1000*60*60*24));
+
+document.getElementById("counter").innerText=
+"We have been together for "+diff+" days ❤️";
 
 </script>
 
