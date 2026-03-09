@@ -671,10 +671,15 @@ list.appendChild(envelope);
 });
 
 if(unread>0 && document.getElementById("letters").style.display==="none"){
-letterBadge.style.display="inline";
-letterBadge.innerText=unread;
-}
 
+document.getElementById("letterBadge").style.display="inline";
+document.getElementById("letterBadge").innerText=unread;
+
+}else{
+
+document.getElementById("letterBadge").style.display="none";
+
+}
 });
 
 </script>
@@ -710,8 +715,8 @@ timeline.style.display="none";
 document.getElementById(page).style.display="block";
 
 if(page==="messages") msgBadge.style.display="none";
-if(page==="letters") letterBadge.style.display="none";
-
+if(page==="letters"){
+document.getElementById("letterBadge").style.display="none";
 }
 
 const startDate=new Date("2024-11-19");
@@ -724,6 +729,7 @@ counter.innerText="We have been together for "+diff+" days ❤️";
 
 </body>
 </html>
+
 
 
 
