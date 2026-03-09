@@ -521,7 +521,8 @@ await addDoc(collection(db,"messages"),{
 name:currentUser,
 message:text,
 time:new Date(),
-hearts:0
+hearts:0,
+seenBy:[currentUser]
 });
 
 document.getElementById("messageBox").value="";
@@ -534,13 +535,12 @@ const q=query(collection(db,"messages"),orderBy("time","asc"));
 
 onSnapshot(q,(snapshot)=>{
 
-if(document.getElementById("messages").style.display==="none"){
-document.getElementById("msgBadge").style.display="inline";
-}
+let unread = 0;
 
 const list=document.getElementById("messageList");
 
-const nearBottom=list.scrollHeight - list.scrollTop - list.clientHeight < 100;
+const nearBottom =
+list.scrollHeight - list.scrollTop - list.clientHeight < 100;
 
 list.innerHTML="";
 
@@ -548,6 +548,16 @@ snapshot.forEach(docSnap=>{
 
 const data=docSnap.data();
 const date=new Date(data.time.seconds*1000);
+
+if(!data.seenBy.includes(currentUser)){
+unread++;
+
+updateDoc(doc(db,"messages",docSnap.id),{
+seenBy:[...data.seenBy,currentUser]
+});
+}
+
+const seen = data.seenBy.length>1 ? "✔✔ Seen":"✔ Sent";
 
 const div=document.createElement("div");
 
@@ -557,11 +567,18 @@ div.innerHTML=
 "<div class='name'>"+data.name+"</div>"+
 "<div>"+data.message+"</div>"+
 "<button class='reactBtn' onclick='reactHeart(\""+docSnap.id+"\")'>❤️ "+(data.hearts||0)+"</button>"+
-"<div class='time'>"+date.toLocaleString()+"</div>";
+"<div class='time'>"+date.toLocaleString()+" "+seen+"</div>";
 
 list.appendChild(div);
 
 });
+
+if(unread>0 && document.getElementById("messages").style.display==="none"){
+
+document.getElementById("msgBadge").style.display="inline";
+document.getElementById("msgBadge").innerText=unread;
+
+}
 
 if(nearBottom){
 
@@ -572,9 +589,8 @@ list.scrollTop=list.scrollHeight;
 document.getElementById("newMsgBtn").style.display="block";
 
 }
-
 });
-
+  
 /* HEART */
 
 window.reactHeart=async function(id){
@@ -601,44 +617,38 @@ await addDoc(collection(db,"letters"),{
 from:currentUser,
 to:to,
 letter:text,
-time:new Date()
+time:new Date(),
+seenBy:[currentUser]
 });
 
 document.getElementById("letterBox").value="";
-
 }
 
 const letterQuery=query(collection(db,"letters"),orderBy("time","desc"));
 
 onSnapshot(letterQuery,(snapshot)=>{
 
-unreadLetters = snapshot.size;
+let unread = 0;
 
-if(document.getElementById("letters").style.display==="none"){
-
-document.getElementById("letterBadge").style.display="inline";
-document.getElementById("letterBadge").innerText = unreadLetters;
-
-}
-  
 const list=document.getElementById("letterList");
-
 list.innerHTML="";
+
 
 snapshot.forEach(docSnap=>{
 
 const data=docSnap.data();
 const date=new Date(data.time.seconds*1000);
 
-const envelope=document.createElement("div");
+if(!data.seenBy.includes(currentUser)){
+unread++;
+}
 
+const envelope=document.createElement("div");
 envelope.className="envelope";
 
 envelope.innerHTML=
 "<div class='envelopeBody'></div>"+
-"<div style='position:absolute;bottom:10px;width:100%;text-align:center;font-weight:bold;color:white;'>"+
-"To: "+data.to+
-"</div>"+
+"<div style='position:absolute;bottom:10px;width:100%;text-align:center;font-weight:bold;color:white;'>To: "+data.to+"</div>"+
 "<div class='envelopeFlap'></div>"+
 "<div class='letter'><b>To: "+data.to+"</b><br><br><i>From: "+data.from+"</i><br><br>"+data.letter+"<br><br><small>"+date.toLocaleString()+"</small></div>";
 
@@ -646,17 +656,39 @@ envelope.onclick=function(){
 
 envelope.classList.toggle("open");
 
+if(!data.seenBy.includes(currentUser)){
+
+updateDoc(doc(db,"letters",docSnap.id),{
+seenBy:[...data.seenBy,currentUser]
+});
+
+}
+
 }
 
 list.appendChild(envelope);
 
 });
 
+if(unread>0 && document.getElementById("letters").style.display==="none"){
+letterBadge.style.display="inline";
+letterBadge.innerText=unread;
+}
+
 });
 
 </script>
 
 <script>
+
+document.addEventListener("keydown",function(e){
+if(e.key==="Enter" && document.activeElement.id==="messageBox"){
+e.preventDefault();
+sendMessage();
+}
+});
+
+/* NEW MESSAGE BUTTON */
 
 document.getElementById("newMsgBtn").onclick=function(){
 
@@ -668,37 +700,17 @@ this.style.display="none";
 
 }
 
-document.addEventListener("keydown",function(e){
-
-if(e.key==="Enter" && document.activeElement.id==="messageBox"){
-e.preventDefault();
-sendMessage();
-}
-
-});
-
 function showPage(page){
 
-document.getElementById("gallery").style.display="none";
-document.getElementById("messages").style.display="none";
-document.getElementById("letters").style.display="none";
-document.getElementById("timeline").style.display="none";
+gallery.style.display="none";
+messages.style.display="none";
+letters.style.display="none";
+timeline.style.display="none";
 
 document.getElementById(page).style.display="block";
 
-if(page==="messages"){
-
-unreadMessages = 0;
-document.getElementById("msgBadge").style.display="none";
-
-}
-
-if(page==="letters"){
-
-unreadLetters = 0;
-document.getElementById("letterBadge").style.display="none";
-
-}
+if(page==="messages") msgBadge.style.display="none";
+if(page==="letters") letterBadge.style.display="none";
 
 }
 
@@ -706,8 +718,7 @@ const startDate=new Date("2024-11-19");
 const today=new Date();
 const diff=Math.floor((today-startDate)/(1000*60*60*24));
 
-document.getElementById("counter").innerText=
-"We have been together for "+diff+" days ❤️";
+counter.innerText="We have been together for "+diff+" days ❤️";
 
 </script>
 
