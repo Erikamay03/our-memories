@@ -549,40 +549,6 @@ const letterQuery=query(collection(db,"letters"),orderBy("time","asc"));
 onSnapshot(letterQuery,(snapshot)=>{
 
 const list=document.getElementById("letterList");
-
-list.innerHTML="";
-
-snapshot.forEach(doc=>{
-
-const data=doc.data();
-const div=document.createElement("div");
-
-const date=new Date(data.time.seconds*1000);
-
-const envelope=document.createElement("div");
-
-envelope.className="envelope";
-
-envelope.innerHTML=
-"<div class='envelopeBody'></div>"+
-"<div class='envelopeFlap'></div>"+
-"<div class='letter'><b>"+data.name+"</b><br><br>"+data.letter+
-"<br><br><small>"+date.toLocaleString()+"</small></div>";
-
-envelope.onclick=function(){
-envelope.classList.toggle("open");
-}
-
-list.appendChild(envelope);
-
-});
-
-});
-const letterQuery=query(collection(db,"letters"),orderBy("time","asc"));
-
-onSnapshot(letterQuery,(snapshot)=>{
-
-const list=document.getElementById("letterList");
 list.innerHTML="";
 
 snapshot.forEach(doc=>{
@@ -648,6 +614,6 @@ document.getElementById("counter").innerText=
 
 </script>
 
-</div>
 </body>
 </html>
+
