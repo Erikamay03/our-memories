@@ -549,7 +549,7 @@ snapshot.forEach(docSnap=>{
 const data=docSnap.data();
 const date=new Date(data.time.seconds*1000);
 
-if(!data.seenBy.includes(currentUser)){
+if(!data.seenBy || !data.seenBy.includes(currentUser)){
 unread++;
 
 updateDoc(doc(db,"messages",docSnap.id),{
@@ -557,7 +557,7 @@ seenBy:[...data.seenBy,currentUser]
 });
 }
 
-const seen = data.seenBy.length>1 ? "✔✔ Seen":"✔ Sent";
+const seen = data.seenBy && data.seenBy.length>1 ? "✔✔ Seen":"✔ Sent";
 
 const div=document.createElement("div");
 
@@ -639,7 +639,7 @@ snapshot.forEach(docSnap=>{
 const data=docSnap.data();
 const date=new Date(data.time.seconds*1000);
 
-if(!data.seenBy.includes(currentUser)){
+if(!data.seenBy || !data.seenBy.includes(currentUser)){
 unread++;
 }
 
@@ -724,6 +724,7 @@ counter.innerText="We have been together for "+diff+" days ❤️";
 
 </body>
 </html>
+
 
 
 
