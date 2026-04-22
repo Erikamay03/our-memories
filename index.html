@@ -712,15 +712,21 @@ this.style.display="none";
 
 function showPage(page){
 
-gallery.style.display="none";
-messages.style.display="none";
-letters.style.display="none";
-timeline.style.display="none";
+document.getElementById("gallery").style.display="none";
+document.getElementById("messages").style.display="none";
+document.getElementById("letters").style.display="none";
+document.getElementById("timeline").style.display="none";
 
 document.getElementById(page).style.display="block";
 
-if(page==="messages") msgBadge.style.display="none";
-if(page==="letters")"letterBadge".style.display="none";
+if(page==="messages"){
+document.getElementById("msgBadge").style.display="none";
+}
+
+if(page==="letters"){
+document.getElementById("letterBadge").style.display="none";
+}
+
 }
 
 const startDate=new Date("2024-11-19");
